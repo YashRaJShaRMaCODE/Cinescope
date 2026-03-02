@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="mb-4">Latest Movies</h2>
+
+<div class="row">
+    {% for movie in movies %}
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <a href="{% url 'movie_detail' movie.id %}">
+                <img src="{{ movie.poster_url }}" class="card-img-top" height="350">
+                <div class="card-body">
+                    <h6>{{ movie.title }}</h6>
+                    <p>⭐ {{ movie.rating }}</p>
+                </div>
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

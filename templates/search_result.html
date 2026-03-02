@@ -1,0 +1,9 @@
+{% extends "base.html"  %}
+{% block content %}
+div class="container">
+    <h3>Search Results for "{{ query }}"</h3>
+    <hr>
+
+    {% include "movie_grid.html" %}
+</div>
+{% endblock %}
