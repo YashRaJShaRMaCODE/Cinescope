@@ -1,22 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="row">
-    <div class="col-md-4">
-        <img src="{{ movie.poster_url }}" class="img-fluid">
+<div class="cine-detail">
+    <div class="cine-detail-poster">
+        <img src="{{ movie.poster_url }}" class="img-fluid" alt="Poster for {{ movie.title }}">
     </div>
-    <div class="col-md-8">
-        <h2>{{ movie.title }}</h2>
-        <p><strong>Release:</strong> {{ movie.release_date }}</p>
-        <p><strong>Genre:</strong> 
+    <div class="cine-detail-copy">
+        <p class="cine-kicker">Film notes</p>
+        <h1>{{ movie.title }}</h1>
+        <p class="cine-detail-meta"><strong>Release</strong><span>{{ movie.release_date }}</span></p>
+        <p class="cine-detail-meta"><strong>Genre</strong>
             <a href="{% url 'genre' movie.genre %}">{{ movie.genre }}</a>
         </p>
-        <p><strong>Director:</strong> 
+        <p class="cine-detail-meta"><strong>Director</strong>
             <a href="{% url 'director' movie.director %}">{{ movie.director }}</a>
         </p>
-        <p><strong>Rating:</strong> ⭐ {{ movie.rating }}</p>
-        <hr>
-        <p>{{ movie.description }}</p>
+        <p class="cine-detail-meta"><strong>Rating</strong><span class="cine-rating"><span aria-hidden="true">★</span> {{ movie.rating }}</span></p>
+        <div class="cine-rule"></div>
+        <p class="cine-description">{{ movie.description }}</p>
     </div>
 </div>
 

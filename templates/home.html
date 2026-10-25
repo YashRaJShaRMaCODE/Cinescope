@@ -1,22 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2 class="mb-4">Latest Movies</h2>
+<section class="cine-opening" aria-labelledby="cine-title">
+    <p class="cine-kicker">A catalog for curious viewers</p>
+    <h1 id="cine-title">Find the film <em>that stays with you.</em></h1>
+    <p>Move from a mood to a title through ratings, genres and release dates.</p>
+</section>
 
-<div class="row">
-    {% for movie in movies %}
-    <div class="col-md-3 mb-4">
-        <div class="card">
-            <a href="{% url 'movie_detail' movie.id %}">
-                <img src="{{ movie.poster_url }}" class="card-img-top" height="350">
-                <div class="card-body">
-                    <h6>{{ movie.title }}</h6>
-                    <p>⭐ {{ movie.rating }}</p>
-                </div>
-            </a>
-        </div>
-    </div>
-    {% endfor %}
-</div>
+<section aria-labelledby="latest-title">
+<div class="cine-section-heading"><div><p class="cine-kicker">Fresh from the catalog</p><h2 id="latest-title">Latest films</h2></div><span>Explore at your own pace</span></div>
+
+{% include "movie_grid.html" %}
+
+</section>
 
 {% endblock %}

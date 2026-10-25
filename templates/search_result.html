@@ -1,9 +1,6 @@
 {% extends "base.html"  %}
 {% block content %}
-div class="container">
-    <h3>Search Results for "{{ query }}"</h3>
-    <hr>
-
-    {% include "movie_grid.html" %}
-</div>
+<p class="cine-kicker">Catalog search</p>
+<h1 class="cine-page-title">Results for “{{ query }}”</h1>
+{% include "movie_grid.html" %}
 {% endblock %}

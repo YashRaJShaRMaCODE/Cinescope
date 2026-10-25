@@ -30,6 +30,12 @@ if not SECRET_KEY:
     raise ImproperlyConfigured("Set DJANGO_SECRET_KEY before starting Cinescope.")
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+if not DEBUG:
+    # Render terminates TLS at its edge and forwards the original scheme.
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_HSTS_SECONDS = 31_536_000
 
 
 # Application definition
