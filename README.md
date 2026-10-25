@@ -60,6 +60,9 @@ pip install django
 ### 4) Apply migrations
 
 ```bash
+# Set a local-only secret before using the app.
+export DJANGO_SECRET_KEY='dev-only-local-key'
+export DJANGO_DEBUG=True
 python manage.py migrate
 ```
 
