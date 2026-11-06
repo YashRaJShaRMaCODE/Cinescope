@@ -28,7 +28,7 @@
         <label for="year-filter">Release year
             <select id="year-filter" name="year">
                 <option value="">Any year</option>
-                {% for year in years %}<option value="{{ year }}"{% if selected_year == year|stringformat:"s" %} selected{% endif %}>{{ year }}</option>{% endfor %}
+                {% for year in years %}<option value="{{ year }}"{% if selected_year == year %} selected{% endif %}>{{ year }}</option>{% endfor %}
             </select>
         </label>
         <label for="rating-filter">Minimum score
