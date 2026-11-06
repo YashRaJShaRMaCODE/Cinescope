@@ -69,6 +69,7 @@ class MoviePaginationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["page_obj"].paginator.count, 25)
         self.assertEqual(response.context["movies"][0].title, "Sky Story 24")
+        self.assertContains(response, '<option value="2020" selected>2020</option>')
         self.assertContains(response, 'name="genre"')
         self.assertContains(response, "Clear filters")
 
