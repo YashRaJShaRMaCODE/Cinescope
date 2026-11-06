@@ -1,9 +1,10 @@
 {% extends "base.html" %}
+{% block title %}Upcoming films | CineScope{% endblock %}
+{% block meta_description %}Browse upcoming films in the CineScope catalog, ordered by release date.{% endblock %}
 {% block content %}
-
-<h3>Upcoming Movies</h3>
-<hr>
-
+<p class="cine-kicker">On the horizon</p>
+<h1 class="cine-page-title">Coming soon</h1>
+<p class="cine-page-intro">Release dates are shown as listed in this catalog.</p>
 {% include "movie_grid.html" %}
 
 {% endblock %}

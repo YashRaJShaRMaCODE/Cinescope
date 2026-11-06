@@ -1,9 +1,9 @@
 {% extends "base.html" %}
+{% block title %}Top rated films | CineScope{% endblock %}
+{% block meta_description %}Explore the highest-rated films in the CineScope movie catalog.{% endblock %}
 {% block content %}
-
-<h3>Top Rated Movies</h3>
-<hr>
-
+<p class="cine-kicker">The highest catalog scores</p>
+<h1 class="cine-page-title">Top rated films</h1>
 {% include "movie_grid.html" %}
 
 {% endblock %}

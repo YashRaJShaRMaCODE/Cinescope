@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.test import RequestFactory, SimpleTestCase, TestCase
+from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from datetime import date, timedelta
 
 from django.urls import reverse
@@ -14,10 +14,12 @@ class ProductionCookieSettingsTests(SimpleTestCase):
         if not settings.DEBUG:
             self.assertEqual(settings.SECURE_PROXY_SSL_HEADER, ("HTTP_X_FORWARDED_PROTO", "https"))
             self.assertEqual(settings.SECURE_HSTS_SECONDS, 31_536_000)
+            self.assertTrue(settings.SECURE_SSL_REDIRECT)
             request = RequestFactory().get("/", HTTP_X_FORWARDED_PROTO="https")
             self.assertTrue(request.is_secure())
 
 
+@override_settings(SECURE_SSL_REDIRECT=False)
 class MoviePaginationTests(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -58,3 +60,26 @@ class MoviePaginationTests(TestCase):
 
         self.assertEqual(invalid.context["page_obj"].number, 1)
         self.assertEqual(too_large.context["page_obj"].number, 2)
+
+    def test_home_filters_and_sorts_the_catalog(self):
+        response = self.client.get(reverse("home"), {
+            "genre": "Sci-Fi", "year": "2020", "rating": "7", "sort": "rating",
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["page_obj"].paginator.count, 25)
+        self.assertEqual(response.context["movies"][0].title, "Sky Story 24")
+        self.assertContains(response, 'name="genre"')
+        self.assertContains(response, "Clear filters")
+
+    def test_search_matches_directors_and_clear_empty_state(self):
+        response = self.client.get(reverse("search"), {"q": "A. Director"})
+        self.assertEqual(response.context["page_obj"].paginator.count, 25)
+
+        empty = self.client.get(reverse("search"), {"q": "no match"})
+        self.assertContains(empty, "No matching films")
+
+    def test_health_robots_and_sitemap_routes(self):
+        self.assertEqual(self.client.get(reverse("healthz")).json(), {"status": "ok"})
+        self.assertContains(self.client.get(reverse("robots")), "Sitemap:")
+        self.assertContains(self.client.get(reverse("sitemap")), "/movie/1/")

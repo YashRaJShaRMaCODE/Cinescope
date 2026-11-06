@@ -1,0 +1,29 @@
+name: Verify
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  django:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - run: python -m pip install -r requirements.txt ruff pip-audit
+      - run: ruff check .
+      - run: python -m compileall -q Cinescope home
+      - run: python manage.py check
+        env:
+          DJANGO_SECRET_KEY: test-only-secret-key
+      - run: python manage.py test
+        env:
+          DJANGO_SECRET_KEY: test-only-secret-key
+      - run: pip-audit -r requirements.txt

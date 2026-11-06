@@ -1,9 +1,8 @@
 {% extends "base.html" %}
+{% block title %}Films released in {{ year }} | CineScope{% endblock %}
 {% block content %}
-
-<h3>Movies Released in {{ year }}</h3>
-<hr>
-
+<p class="cine-kicker">Browse by year</p>
+<h1 class="cine-page-title">Films released in {{ year }}</h1>
 {% include "movie_grid.html" %}
 
 {% endblock %}

@@ -1,9 +1,17 @@
 {% extends "base.html" %}
+{% load static %}
+{% block title %}{{ movie.title }} ({{ movie.release_date|date:"Y" }}) — CineScope{% endblock %}
+{% block meta_description %}{{ movie.description|truncatechars:160 }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ movie.title }} ({{ movie.release_date|date:"Y" }}) — CineScope{% endblock %}
+{% block og_description %}{{ movie.description|truncatechars:160 }}{% endblock %}
+{% block og_image %}<meta property="og:image" content="{{ movie.poster_url }}">{% endblock %}
+{% block extra_head %}<script type="application/ld+json">{{ movie_schema }}</script>{% endblock %}
 {% block content %}
 
 <div class="cine-detail">
     <div class="cine-detail-poster">
-        <img src="{{ movie.poster_url }}" class="img-fluid" alt="Poster for {{ movie.title }}">
+        <img src="{{ movie.poster_url }}" alt="Poster for {{ movie.title }}" width="342" height="513" fetchpriority="high" decoding="async" onerror="this.onerror=null;this.src='{% static 'poster-fallback.svg' %}'">
     </div>
     <div class="cine-detail-copy">
         <p class="cine-kicker">Film notes</p>
@@ -15,10 +23,17 @@
         <p class="cine-detail-meta"><strong>Director</strong>
             <a href="{% url 'director' movie.director %}">{{ movie.director }}</a>
         </p>
-        <p class="cine-detail-meta"><strong>Rating</strong><span class="cine-rating"><span aria-hidden="true">★</span> {{ movie.rating }}</span></p>
+        <p class="cine-detail-meta"><strong>Catalog rating</strong><span class="cine-rating" aria-label="Catalog score {{ movie.rating }} out of 10"><span aria-hidden="true">★</span> {{ movie.rating }} / 10</span></p>
         <div class="cine-rule"></div>
         <p class="cine-description">{{ movie.description }}</p>
     </div>
 </div>
+
+{% if related_movies %}
+<section class="cine-related" aria-labelledby="related-title">
+    <div class="cine-section-heading"><div><p class="cine-kicker">Stay in this corner</p><h2 id="related-title">More {{ movie.genre }} films</h2></div></div>
+    {% with movies=related_movies %}{% include "movie_grid.html" %}{% endwith %}
+</section>
+{% endif %}
 
 {% endblock %}

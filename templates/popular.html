@@ -1,9 +1,10 @@
 {% extends "base.html" %}
+{% block title %}Popular films | CineScope{% endblock %}
+{% block meta_description %}Browse the most popular films in the CineScope catalog, organized by catalog rating and release date.{% endblock %}
 {% block content %}
-
-<h3>Popular Movies</h3>
-<hr>
-
+<p class="cine-kicker">A place to begin</p>
+<h1 class="cine-page-title">Popular films</h1>
+<p class="cine-page-intro">A short list of well-rated favorites from the catalog.</p>
 {% include "movie_grid.html" %}
 
 {% endblock %}
