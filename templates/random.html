@@ -1,9 +1,9 @@
 {% extends "base.html" %}
+{% block title %}A random film pick | CineScope{% endblock %}
 {% block content %}
-
-<h3>Random Picks</h3>
-<hr>
-
+<p class="cine-kicker">Let chance choose</p>
+<h1 class="cine-page-title">A few unexpected picks</h1>
+<p class="cine-page-intro">Refresh for a different set from the catalog.</p>
 {% include "movie_grid.html" %}
 
 {% endblock %}

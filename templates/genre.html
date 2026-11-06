@@ -1,9 +1,9 @@
 {% extends "base.html" %}
+{% block title %}{{ genre }} films | CineScope{% endblock %}
+{% block meta_description %}Browse {{ genre }} films in the CineScope catalog.{% endblock %}
 {% block content %}
-
-<h3>{{ genre }} Movies</h3>
-<hr>
-
+<p class="cine-kicker">Browse by genre</p>
+<h1 class="cine-page-title">{{ genre }} films</h1>
 {% include "movie_grid.html" %}
 
 {% endblock %}

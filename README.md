@@ -1,24 +1,17 @@
 
-# Cinescope
+# CineScope
 
-Cinescope is a Django-based movie discovery web app. It provides pages for browsing movies, viewing details, and filtering by genre, director, rating, release year, and curated lists such as top rated, upcoming, popular, and random picks.
+CineScope is a Django movie discovery catalog. Browse titles by genre, release year, director and catalog score, then open a film page for its details and related picks.
 
 ## Features
 
-- Home page listing all movies.
-- Movie detail page.
-- Search by movie title.
-- Filter and browse by:
-  - Genre
-  - Director
-  - Minimum rating
-  - Release year
-- Curated pages:
-  - Top rated
-  - Upcoming releases
-  - Popular movies
-  - Random selection
-- Django admin panel for managing data.
+- Search titles, genres and directors.
+- Filter the catalog by genre, release year and minimum score; sort by release date, score or title.
+- Browse popular, top-rated, upcoming and random collections.
+- Open movie pages with poster fallback, catalog details, related films, canonical metadata and Movie structured data.
+- Responsive poster-first layout, keyboard-accessible controls, reduced-motion support and lazy-loaded images.
+- `sitemap.xml`, `robots.txt` and `/healthz/` routes for discovery and deployment checks.
+- Django admin for maintaining the catalog.
 
 ## Tech Stack
 
@@ -54,16 +47,21 @@ source .venv/bin/activate
 ### 3) Install dependencies
 
 ```bash
-pip install django
+pip install -r requirements.txt
 ```
 
 ### 4) Apply migrations
 
+```powershell
+$env:DJANGO_SECRET_KEY = "local-development-only"
+$env:DJANGO_DEBUG = "true"
+```
+
+On macOS/Linux, use `export` for those variables. Then:
+
 ```bash
-# Set a local-only secret before using the app.
-export DJANGO_SECRET_KEY='dev-only-local-key'
-export DJANGO_DEBUG=True
 python manage.py migrate
+python manage.py seed_movies
 ```
 
 ### 5) Run development server
@@ -87,9 +85,12 @@ Open: <http://127.0.0.1:8000/>
 - `/upcoming/` – Upcoming releases
 - `/popular/` – Popular movies
 - `/random/` – Random picks
+- `/robots.txt` and `/sitemap.xml` – Search discovery
+- `/healthz/` – Service health
 - `/admin/` – Django admin
 
 ## Notes
 
-- The project currently uses SQLite for local development.
-- Ensure Django is installed in your active environment before running management commands.
+- SQLite is used for the seeded catalog. Keep user-submitted content off this deployment until a persistent database is configured.
+- Render runs migrations and idempotently seeds the sample catalog during deploy; `/healthz/` is the configured health check.
+- GitHub Actions runs the Django checks and test suite. Dependabot checks Python and workflow dependencies weekly.

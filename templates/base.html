@@ -4,28 +4,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="theme-color" content="#101317">
-    <meta name="description" content="Discover films through curated collections, ratings and genre guides.">
+    <meta name="description" content="{% block meta_description %}Discover films by genre, director, release date and rating in a thoughtfully curated movie catalog.{% endblock %}">
+    <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:site_name" content="CineScope">
+    <meta property="og:title" content="{% block og_title %}CineScope — Find your next film{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Discover films by genre, director, release date and rating in a thoughtfully curated movie catalog.{% endblock %}">
+    {% block og_image %}{% endblock %}
+    <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+    <meta name="twitter:card" content="summary_large_image">
     <title>{% block title %}CineScope — Find your next film{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="{% static 'site.css' %}" rel="stylesheet">
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
 
-<nav class="cine-nav">
+<header class="cine-nav">
     <a class="cine-brand" href="/" aria-label="CineScope home"><span aria-hidden="true">C</span>CineScope</a>
-    <div class="cine-links" aria-label="Film collections">
-        <a href="{% url 'popular' %}">Popular</a>
-        <a href="{% url 'top_rated' %}">Top rated</a>
-        <a href="{% url 'upcoming' %}">Coming soon</a>
-    </div>
+    <nav class="cine-links" aria-label="Film collections">
+        <a href="{% url 'popular' %}"{% if request.resolver_match.url_name == 'popular' %} aria-current="page"{% endif %}>Popular</a>
+        <a href="{% url 'top_rated' %}"{% if request.resolver_match.url_name == 'top_rated' %} aria-current="page"{% endif %}>Top rated</a>
+        <a href="{% url 'upcoming' %}"{% if request.resolver_match.url_name == 'upcoming' %} aria-current="page"{% endif %}>Coming soon</a>
+    </nav>
     <form class="cine-search" method="GET" action="{% url 'search' %}" role="search">
         <label class="visually-hidden" for="cine-search">Search films</label>
         <input id="cine-search" type="search" name="q" placeholder="Search films" value="{{ request.GET.q|default:'' }}">
         <button type="submit" aria-label="Search">↗</button>
     </form>
-</nav>
+</header>
 
 <main class="cine-content" id="top">
     {% block content %}{% endblock %}

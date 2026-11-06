@@ -1,9 +1,9 @@
 {% extends "base.html" %}
+{% block title %}Films directed by {{ director }} | CineScope{% endblock %}
+{% block meta_description %}Explore films directed by {{ director }} in the CineScope catalog.{% endblock %}
 {% block content %}
-
-<h3>Directed by {{ director }}</h3>
-<hr>
-
+<p class="cine-kicker">Browse by filmmaker</p>
+<h1 class="cine-page-title">Directed by {{ director }}</h1>
 {% include "movie_grid.html" %}
 
 {% endblock %}

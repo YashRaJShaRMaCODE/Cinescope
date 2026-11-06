@@ -1,16 +1,18 @@
+{% load static %}
 <div class="cine-grid">
     {% for movie in movies %}
         <article class="cine-card">
                 <a href="{% url 'movie_detail' movie.id %}">
-                    <img src="{{ movie.poster_url }}" alt="Poster for {{ movie.title }}" loading="lazy">
+                    <img src="{{ movie.poster_url }}" alt="Poster for {{ movie.title }}" width="342" height="513" onerror="this.onerror=null;this.src='{% static 'poster-fallback.svg' %}'"{% if forloop.first %} fetchpriority="high"{% else %} loading="lazy"{% endif %} decoding="async">
                     <div class="cine-card-copy">
                         <h3>{{ movie.title }}</h3>
-                        <p class="cine-rating"><span aria-hidden="true">★</span> {{ movie.rating }}</p>
+                        <p class="cine-rating" aria-label="Catalog score {{ movie.rating }} out of 10"><span aria-hidden="true">★</span> {{ movie.rating }}</p>
                     </div>
+                    <p class="cine-card-meta">{{ movie.release_date|date:"Y" }} <span aria-hidden="true">·</span> {{ movie.genre }}</p>
                 </a>
         </article>
     {% empty %}
-        <p class="cine-empty">No films found. Try another search.</p>
+        <p class="cine-empty">{{ empty_message|default:"No films found. Adjust your filters and try again." }}{% if selected_genre or selected_year or selected_rating or selected_sort != "latest" %} <a href="{% url 'home' %}">Clear filters</a>{% endif %}</p>
     {% endfor %}
 </div>
 {% include "pagination.html" %}

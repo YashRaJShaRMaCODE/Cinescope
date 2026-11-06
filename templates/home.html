@@ -1,14 +1,54 @@
 {% extends "base.html" %}
+{% block title %}Discover films by genre and mood | CineScope{% endblock %}
+{% block meta_description %}Explore films by genre, year, rating or director. Find a new watch with CineScope's curated movie discovery catalog.{% endblock %}
+{% block og_title %}Discover films by genre and mood | CineScope{% endblock %}
+{% block og_description %}Explore films by genre, year, rating or director. Find a new watch with CineScope's curated movie discovery catalog.{% endblock %}
 {% block content %}
 
 <section class="cine-opening" aria-labelledby="cine-title">
     <p class="cine-kicker">A catalog for curious viewers</p>
     <h1 id="cine-title">Find the film <em>that stays with you.</em></h1>
     <p>Move from a mood to a title through ratings, genres and release dates.</p>
+    <div class="cine-hero-actions">
+        <a class="cine-action-link" href="{% url 'popular' %}">Explore popular films <span aria-hidden="true">↗</span></a>
+        <a class="cine-text-link" href="{% url 'random' %}">Surprise me</a>
+    </div>
 </section>
 
 <section aria-labelledby="latest-title">
-<div class="cine-section-heading"><div><p class="cine-kicker">Fresh from the catalog</p><h2 id="latest-title">Latest films</h2></div><span>Explore at your own pace</span></div>
+    <div class="cine-section-heading"><div><p class="cine-kicker">Pick a path in</p><h2 id="latest-title">Browse the collection</h2></div><span>{{ page_obj.paginator.count }} title{{ page_obj.paginator.count|pluralize }}</span></div>
+
+    <form class="cine-filter-bar" method="get" action="{% url 'home' %}" aria-label="Filter the movie collection">
+        <label for="genre-filter">Genre
+            <select id="genre-filter" name="genre">
+                <option value="">All genres</option>
+                {% for genre in genres %}<option value="{{ genre }}"{% if selected_genre == genre %} selected{% endif %}>{{ genre }}</option>{% endfor %}
+            </select>
+        </label>
+        <label for="year-filter">Release year
+            <select id="year-filter" name="year">
+                <option value="">Any year</option>
+                {% for year in years %}<option value="{{ year }}"{% if selected_year == year|stringformat:"s" %} selected{% endif %}>{{ year }}</option>{% endfor %}
+            </select>
+        </label>
+        <label for="rating-filter">Minimum score
+            <select id="rating-filter" name="rating">
+                <option value="">Any score</option>
+                {% for rating in rating_steps %}<option value="{{ rating }}"{% if selected_rating == rating %} selected{% endif %}>{{ rating }}+</option>{% endfor %}
+            </select>
+        </label>
+        <label for="sort-filter">Sort by
+            <select id="sort-filter" name="sort">
+                <option value="latest"{% if selected_sort == "latest" %} selected{% endif %}>Release date</option>
+                <option value="rating"{% if selected_sort == "rating" %} selected{% endif %}>Highest rated</option>
+                <option value="title"{% if selected_sort == "title" %} selected{% endif %}>Title A–Z</option>
+            </select>
+        </label>
+        <div class="cine-filter-actions">
+            <button type="submit">Show films <span aria-hidden="true">↗</span></button>
+            {% if selected_genre or selected_year or selected_rating or selected_sort != "latest" %}<a href="{% url 'home' %}">Clear filters</a>{% endif %}
+        </div>
+    </form>
 
 {% include "movie_grid.html" %}
 

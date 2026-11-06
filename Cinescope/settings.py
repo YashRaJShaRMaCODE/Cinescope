@@ -35,6 +35,7 @@ CSRF_COOKIE_SECURE = not DEBUG
 if not DEBUG:
     # Render terminates TLS at its edge and forwards the original scheme.
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = 31_536_000
 
 
@@ -42,6 +43,7 @@ if not DEBUG:
 
 INSTALLED_APPS = [
     'home',
+    'django.contrib.sitemaps',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

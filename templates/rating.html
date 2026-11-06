@@ -1,9 +1,8 @@
 {% extends "base.html" %}
+{% block title %}Films rated {{ rating }} and above | CineScope{% endblock %}
 {% block content %}
-
-<h3>Movies Rated Above {{ rating }}</h3>
-<hr>
-
+<p class="cine-kicker">Browse by catalog score</p>
+<h1 class="cine-page-title">Rated {{ rating }} and above</h1>
 {% include "movie_grid.html" %}
 
 {% endblock %}

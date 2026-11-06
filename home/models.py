@@ -1,13 +1,24 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
+
+
 class Movie(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     release_date = models.DateField()
     genre = models.CharField(max_length=100)
     director = models.CharField(max_length=100)
-    rating = models.FloatField()
+    rating = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(10)])
     poster_url = models.URLField()
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["genre"], name="movie_genre_idx"),
+            models.Index(fields=["release_date"], name="movie_release_idx"),
+            models.Index(fields=["rating"], name="movie_rating_idx"),
+        ]
+
     def __str__(self):
         return self.title
     
