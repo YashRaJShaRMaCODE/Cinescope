@@ -3,6 +3,8 @@
 
 CineScope is a Django movie discovery catalog. Browse titles by genre, release year, director and catalog score, then open a film page for its details and related picks.
 
+**Live site:** [cinescope-3pc5.onrender.com](https://cinescope-3pc5.onrender.com/)
+
 ## Features
 
 - Search titles, genres and directors.
