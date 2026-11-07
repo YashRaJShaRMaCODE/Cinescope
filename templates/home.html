@@ -15,6 +15,18 @@
     </div>
 </section>
 
+<section class="cine-genres" id="genres" aria-labelledby="genres-title">
+    <div class="cine-section-heading"><div><p class="cine-kicker">Pick a direction</p><h2 id="genres-title">Browse by genre</h2></div><span>{{ genre_counts|length }} genres</span></div>
+    <div class="cine-genre-grid">
+        {% for item in genre_counts %}
+        <a class="cine-genre-link" href="{% url 'genre' item.genre %}">
+            <span>{{ item.genre }}</span>
+            <span>{{ item.count }} film{{ item.count|pluralize }} <span aria-hidden="true">↗</span></span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
 <section aria-labelledby="latest-title">
     <div class="cine-section-heading"><div><p class="cine-kicker">Pick a path in</p><h2 id="latest-title">Browse the collection</h2></div><span>{{ page_obj.paginator.count }} title{{ page_obj.paginator.count|pluralize }}</span></div>
 

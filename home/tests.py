@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from datetime import date, timedelta
+import re
 
 from django.urls import reverse
 
@@ -17,6 +18,44 @@ class ProductionCookieSettingsTests(SimpleTestCase):
             self.assertTrue(settings.SECURE_SSL_REDIRECT)
             request = RequestFactory().get("/", HTTP_X_FORWARDED_PROTO="https")
             self.assertTrue(request.is_secure())
+
+
+@override_settings(SECURE_SSL_REDIRECT=False)
+class PublicSecurityHeaderTests(TestCase):
+    def test_public_html_has_a_nonce_csp_and_restrictive_permissions(self):
+        response = self.client.get(reverse("home"))
+
+        self.assertEqual(response.status_code, 200)
+        policy = response["Content-Security-Policy"]
+        self.assertIn("script-src 'self' 'nonce-", policy)
+        self.assertIn("script-src-attr 'none'", policy)
+        self.assertIn("frame-ancestors 'none'", policy)
+        self.assertEqual(response["Permissions-Policy"], "camera=(), microphone=(), geolocation=(), payment=(), usb=()")
+        self.assertEqual(response["X-Frame-Options"], "DENY")
+        self.assertEqual(response["X-Content-Type-Options"], "nosniff")
+        self.assertEqual(response["Referrer-Policy"], "strict-origin-when-cross-origin")
+        self.assertEqual(response["Cross-Origin-Opener-Policy"], "same-origin")
+
+    def test_movie_json_ld_script_receives_the_matching_nonce(self):
+        movie = Movie.objects.create(
+            title="Nonce Test",
+            description="A test film.",
+            release_date=date(2020, 1, 1),
+            genre="Drama",
+            director="A. Director",
+            rating=7.5,
+            poster_url="https://image.tmdb.org/t/p/w500/test.jpg",
+        )
+        response = self.client.get(reverse("movie_detail", args=[movie.pk]))
+        nonce = re.search(r"'nonce-([^']+)'", response["Content-Security-Policy"]).group(1)
+
+        self.assertContains(response, f'<script nonce="{nonce}" type="application/ld+json">')
+
+    def test_admin_is_not_given_the_public_content_policy(self):
+        response = self.client.get("/admin/login/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("Content-Security-Policy", response)
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)
@@ -72,6 +111,14 @@ class MoviePaginationTests(TestCase):
         self.assertContains(response, '<option value="2020" selected>2020</option>')
         self.assertContains(response, 'name="genre"')
         self.assertContains(response, "Clear filters")
+
+    def test_home_shows_genres_with_catalog_counts(self):
+        response = self.client.get(reverse("home"))
+
+        self.assertEqual(response.context["genre_counts"], [{"genre": "Sci-Fi", "count": 25}])
+        self.assertContains(response, 'id="genres-title"')
+        self.assertContains(response, 'href="/genre/Sci-Fi/"')
+        self.assertContains(response, "25 films")
 
     def test_watchlist_controls_render_on_collection_and_detail_pages(self):
         listing = self.client.get(reverse("home"))

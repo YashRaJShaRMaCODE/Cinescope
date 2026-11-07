@@ -6,12 +6,12 @@
 {% block og_title %}{{ movie.title }} ({{ movie.release_date|date:"Y" }}) — CineScope{% endblock %}
 {% block og_description %}{{ movie.description|truncatechars:160 }}{% endblock %}
 {% block og_image %}<meta property="og:image" content="{{ movie.poster_url }}">{% endblock %}
-{% block extra_head %}<script type="application/ld+json">{{ movie_schema }}</script>{% endblock %}
+{% block extra_head %}<script nonce="{{ request.csp_nonce }}" type="application/ld+json">{{ movie_schema }}</script>{% endblock %}
 {% block content %}
 
 <div class="cine-detail">
     <div class="cine-detail-poster">
-        <img src="{{ movie.poster_url }}" alt="Poster for {{ movie.title }}" width="342" height="513" fetchpriority="high" decoding="async" onerror="this.onerror=null;this.src='{% static 'poster-fallback.svg' %}'">
+        <img src="{{ movie.poster_url }}" alt="Poster for {{ movie.title }}" width="342" height="513" fetchpriority="high" decoding="async" data-fallback="{% static 'poster-fallback.svg' %}">
     </div>
     <div class="cine-detail-copy">
         <p class="cine-kicker">Film notes</p>

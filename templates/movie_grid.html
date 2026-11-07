@@ -3,7 +3,7 @@
     {% for movie in movies %}
         <article class="cine-card">
                 <a href="{% url 'movie_detail' movie.id %}">
-                    <img src="{{ movie.poster_url }}" alt="Poster for {{ movie.title }}" width="342" height="513" onerror="this.onerror=null;this.src='{% static 'poster-fallback.svg' %}'"{% if forloop.first %} fetchpriority="high"{% else %} loading="lazy"{% endif %} decoding="async">
+                    <img src="{{ movie.poster_url }}" alt="Poster for {{ movie.title }}" width="342" height="513" data-fallback="{% static 'poster-fallback.svg' %}"{% if forloop.first %} fetchpriority="high"{% else %} loading="lazy"{% endif %} decoding="async">
                     <div class="cine-card-copy">
                         <h3>{{ movie.title }}</h3>
                         <p class="cine-rating" aria-label="Catalog score {{ movie.rating }} out of 10"><span aria-hidden="true">★</span> {{ movie.rating }}</p>
