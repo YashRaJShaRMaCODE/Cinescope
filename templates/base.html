@@ -42,6 +42,8 @@
 <dialog class="cine-watchlist-dialog" id="cine-watchlist" aria-labelledby="cine-watchlist-title">
     <div class="cine-watchlist-heading"><div><p class="cine-kicker">YOUR PRIVATE PICKS</p><h2 id="cine-watchlist-title">Watchlist</h2></div><button class="cine-watchlist-close" type="button" aria-label="Close watchlist">×</button></div>
     <p class="cine-watchlist-note">Saved on this device only. No account needed.</p>
+    <button class="cine-watchlist-pick" id="cine-watchlist-pick" type="button" aria-label="Choose a random film from your watchlist" disabled>Pick one for me</button>
+    <p class="cine-watchlist-pick-result" id="cine-watchlist-pick-result" role="status" aria-live="polite" hidden></p>
     <p class="cine-watchlist-empty" id="cine-watchlist-empty">Your list is waiting for a good film.</p>
     <ul class="cine-watchlist-items" id="cine-watchlist-items"></ul>
 </dialog>

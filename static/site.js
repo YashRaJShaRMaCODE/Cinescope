@@ -4,7 +4,9 @@
   const list = document.querySelector("#cine-watchlist-items");
   const empty = document.querySelector("#cine-watchlist-empty");
   const count = document.querySelector("#cine-watchlist-count");
-  if (!dialog || !list || !empty || !count) return;
+  const pickButton = document.querySelector("#cine-watchlist-pick");
+  const pickResult = document.querySelector("#cine-watchlist-pick-result");
+  if (!dialog || !list || !empty || !count || !pickButton || !pickResult) return;
 
   function readItems() {
     try {
@@ -57,6 +59,9 @@
     const items = readItems();
     list.replaceChildren();
     empty.hidden = items.length > 0;
+    pickButton.disabled = items.length === 0;
+    pickResult.replaceChildren();
+    pickResult.hidden = true;
     items.forEach((item) => {
       const row = document.createElement("li");
       const link = document.createElement("a");
@@ -125,6 +130,16 @@
   document.querySelector("#cine-watchlist-toggle").addEventListener("click", () => {
     renderList();
     dialog.showModal();
+  });
+  pickButton.addEventListener("click", () => {
+    const items = readItems();
+    if (!items.length) return;
+    const item = items[Math.floor(Math.random() * items.length)];
+    const link = document.createElement("a");
+    link.href = /^\/movie\/\d+\/$/.test(item.href) ? item.href : `/movie/${item.id}/`;
+    link.textContent = item.title.slice(0, 200);
+    pickResult.replaceChildren(document.createTextNode("Your next watch: "), link);
+    pickResult.hidden = false;
   });
   dialog.querySelector(".cine-watchlist-close").addEventListener("click", () => dialog.close());
   dialog.addEventListener("click", (event) => {
