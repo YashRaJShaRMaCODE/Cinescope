@@ -76,6 +76,8 @@ class MoviePaginationTests(TestCase):
     def test_watchlist_controls_render_on_collection_and_detail_pages(self):
         listing = self.client.get(reverse("home"))
         self.assertContains(listing, 'id="cine-watchlist-toggle"')
+        self.assertContains(listing, 'id="cine-watchlist-pick"')
+        self.assertContains(listing, 'id="cine-watchlist-pick-result"')
         self.assertContains(listing, 'data-title="Sky Story 24"')
         self.assertContains(listing, 'aria-pressed="false"')
 
