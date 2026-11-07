@@ -3,7 +3,7 @@ from datetime import date
 import json
 
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -39,7 +39,8 @@ def robots_txt(request):
 
 def home(request):
     movies = Movie.objects.all()
-    genres = Movie.objects.order_by("genre").values_list("genre", flat=True).distinct()
+    genre_counts = list(Movie.objects.values("genre").annotate(count=Count("id")).order_by("genre"))
+    genres = [item["genre"] for item in genre_counts]
     years = [value.year for value in Movie.objects.dates("release_date", "year", order="DESC")]
     genre = request.GET.get("genre", "")
     year = request.GET.get("year", "")
@@ -73,6 +74,7 @@ def home(request):
         movies.order_by(*ordering[sort]),
         "home.html",
         genres=genres,
+        genre_counts=genre_counts,
         years=years,
         selected_genre=genre,
         selected_year=year,

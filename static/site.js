@@ -1,4 +1,12 @@
 (() => {
+  document.addEventListener("error", (event) => {
+    const image = event.target;
+    if (image instanceof HTMLImageElement && image.dataset.fallback && !image.dataset.fallbackApplied) {
+      image.dataset.fallbackApplied = "true";
+      image.src = image.dataset.fallback;
+    }
+  }, true);
+
   const storageKey = "cinescope-watchlist:v1";
   const dialog = document.querySelector("#cine-watchlist");
   const list = document.querySelector("#cine-watchlist-items");
@@ -6,7 +14,13 @@
   const count = document.querySelector("#cine-watchlist-count");
   const pickButton = document.querySelector("#cine-watchlist-pick");
   const pickResult = document.querySelector("#cine-watchlist-pick-result");
-  if (!dialog || !list || !empty || !count || !pickButton || !pickResult) return;
+  const searchInput = document.querySelector("#cine-watchlist-search");
+  const sortSelect = document.querySelector("#cine-watchlist-sort");
+  const exportButton = document.querySelector("#cine-watchlist-export");
+  const results = document.querySelector("#cine-watchlist-results");
+  const noMatches = document.querySelector("#cine-watchlist-no-matches");
+  if (!dialog || !list || !empty || !count || !pickButton || !pickResult || !searchInput || !sortSelect || !exportButton || !results || !noMatches) return;
+  let memoryItems;
 
   function readItems() {
     try {
@@ -14,16 +28,25 @@
       if (!Array.isArray(parsed)) return [];
       return parsed.filter((item) => item && /^\d+$/.test(String(item.id)) && typeof item.title === "string");
     } catch {
-      return [];
+      return memoryItems || [];
     }
   }
 
   function saveItems(items) {
+    memoryItems = items.slice(0, 100);
     try {
-      localStorage.setItem(storageKey, JSON.stringify(items.slice(0, 100)));
+      localStorage.setItem(storageKey, JSON.stringify(memoryItems));
     } catch {
       // Keep the interface usable if browser storage is disabled or full.
     }
+  }
+
+  function visibleItems(items) {
+    const query = searchInput.value.trim().toLowerCase();
+    const filtered = items.filter((item) => `${item.title} ${item.year} ${item.genre}`.toLowerCase().includes(query));
+    if (sortSelect.value === "title") filtered.sort((a, b) => a.title.localeCompare(b.title));
+    if (sortSelect.value === "rating") filtered.sort((a, b) => Number(b.rating || 0) - Number(a.rating || 0));
+    return filtered;
   }
 
   function posterFor(button) {
@@ -56,10 +79,17 @@
   }
 
   function renderList() {
-    const items = readItems();
+    const allItems = readItems();
+    const items = visibleItems(allItems);
     list.replaceChildren();
-    empty.hidden = items.length > 0;
+    empty.hidden = allItems.length > 0;
+    noMatches.hidden = allItems.length === 0 || items.length > 0;
     pickButton.disabled = items.length === 0;
+    searchInput.disabled = allItems.length === 0;
+    sortSelect.disabled = allItems.length === 0;
+    exportButton.disabled = allItems.length === 0;
+    results.hidden = allItems.length === 0;
+    results.textContent = `${items.length} of ${allItems.length} saved films`;
     pickResult.replaceChildren();
     pickResult.hidden = true;
     items.forEach((item) => {
@@ -132,7 +162,7 @@
     dialog.showModal();
   });
   pickButton.addEventListener("click", () => {
-    const items = readItems();
+    const items = visibleItems(readItems());
     if (!items.length) return;
     const item = items[Math.floor(Math.random() * items.length)];
     const link = document.createElement("a");
@@ -142,6 +172,16 @@
     pickResult.hidden = false;
   });
   dialog.querySelector(".cine-watchlist-close").addEventListener("click", () => dialog.close());
+  searchInput.addEventListener("input", renderList);
+  sortSelect.addEventListener("change", renderList);
+  exportButton.addEventListener("click", () => {
+    const blob = new Blob([`${JSON.stringify(readItems(), null, 2)}\n`], { type: "application/json" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "cinescope-watchlist.json";
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  });
   dialog.addEventListener("click", (event) => {
     if (event.target === dialog) dialog.close();
   });

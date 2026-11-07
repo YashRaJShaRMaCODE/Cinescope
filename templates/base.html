@@ -24,9 +24,12 @@
 </head>
 <body>
 
+<a class="cine-skip-link" href="#top">Skip to content</a>
+
 <header class="cine-nav">
     <a class="cine-brand" href="/" aria-label="CineScope home"><span aria-hidden="true">C</span>CineScope</a>
     <nav class="cine-links" aria-label="Film collections">
+        <a href="/#genres">Genres</a>
         <a href="{% url 'popular' %}"{% if request.resolver_match.url_name == 'popular' %} aria-current="page"{% endif %}>Popular</a>
         <a href="{% url 'top_rated' %}"{% if request.resolver_match.url_name == 'top_rated' %} aria-current="page"{% endif %}>Top rated</a>
         <a href="{% url 'upcoming' %}"{% if request.resolver_match.url_name == 'upcoming' %} aria-current="page"{% endif %}>Coming soon</a>
@@ -42,13 +45,26 @@
 <dialog class="cine-watchlist-dialog" id="cine-watchlist" aria-labelledby="cine-watchlist-title">
     <div class="cine-watchlist-heading"><div><p class="cine-kicker">YOUR PRIVATE PICKS</p><h2 id="cine-watchlist-title">Watchlist</h2></div><button class="cine-watchlist-close" type="button" aria-label="Close watchlist">×</button></div>
     <p class="cine-watchlist-note">Saved on this device only. No account needed.</p>
+    <div class="cine-watchlist-tools">
+        <label class="visually-hidden" for="cine-watchlist-search">Search saved films</label>
+        <input id="cine-watchlist-search" type="search" placeholder="Find a saved film">
+        <label class="visually-hidden" for="cine-watchlist-sort">Sort saved films</label>
+        <select id="cine-watchlist-sort">
+            <option value="recent">Recently saved</option>
+            <option value="title">Title A–Z</option>
+            <option value="rating">Highest score</option>
+        </select>
+        <button class="cine-watchlist-export" id="cine-watchlist-export" type="button" disabled>Export JSON</button>
+    </div>
+    <p class="cine-watchlist-results" id="cine-watchlist-results" role="status" aria-live="polite" hidden></p>
     <button class="cine-watchlist-pick" id="cine-watchlist-pick" type="button" aria-label="Choose a random film from your watchlist" disabled>Pick one for me</button>
     <p class="cine-watchlist-pick-result" id="cine-watchlist-pick-result" role="status" aria-live="polite" hidden></p>
     <p class="cine-watchlist-empty" id="cine-watchlist-empty">Your list is waiting for a good film.</p>
+    <p class="cine-watchlist-empty" id="cine-watchlist-no-matches" hidden>No saved films match that search.</p>
     <ul class="cine-watchlist-items" id="cine-watchlist-items"></ul>
 </dialog>
 
-<main class="cine-content" id="top">
+<main class="cine-content" id="top" tabindex="-1">
     {% block content %}{% endblock %}
   </main>
 <footer class="cine-footer"><a href="/">CineScope</a><span>Browse a little deeper.</span><a href="#top">Back to top ↑</a></footer>
