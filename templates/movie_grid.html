@@ -10,6 +10,7 @@
                     </div>
                     <p class="cine-card-meta">{{ movie.release_date|date:"Y" }} <span aria-hidden="true">·</span> {{ movie.genre }}</p>
                 </a>
+                <button class="cine-watchlist-save" type="button" data-movie-id="{{ movie.id }}" data-title="{{ movie.title }}" data-year="{{ movie.release_date|date:'Y' }}" data-genre="{{ movie.genre }}" data-rating="{{ movie.rating }}" aria-pressed="false" aria-label="Save {{ movie.title }} to watchlist"><span aria-hidden="true">＋</span></button>
         </article>
     {% empty %}
         <p class="cine-empty">{{ empty_message|default:"No films found. Adjust your filters and try again." }}{% if selected_genre or selected_year or selected_rating or selected_sort != "latest" %} <a href="{% url 'home' %}">Clear filters</a>{% endif %}</p>

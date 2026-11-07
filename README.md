@@ -11,9 +11,12 @@ CineScope is a Django movie discovery catalog. Browse titles by genre, release y
 - Filter the catalog by genre, release year and minimum score; sort by release date, score or title.
 - Browse popular, top-rated, upcoming and random collections.
 - Open movie pages with poster fallback, catalog details, related films, canonical metadata and Movie structured data.
+- Save films to a private, device-local watchlist; no account or server-side activity tracking is needed.
 - Responsive poster-first layout, keyboard-accessible controls, reduced-motion support and lazy-loaded images.
 - `sitemap.xml`, `robots.txt` and `/healthz/` routes for discovery and deployment checks.
 - Django admin for maintaining the catalog.
+
+The watchlist is stored in this browser's local storage. Clearing browser site data removes it.
 
 ## Tech Stack
 

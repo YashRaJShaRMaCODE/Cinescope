@@ -73,6 +73,16 @@ class MoviePaginationTests(TestCase):
         self.assertContains(response, 'name="genre"')
         self.assertContains(response, "Clear filters")
 
+    def test_watchlist_controls_render_on_collection_and_detail_pages(self):
+        listing = self.client.get(reverse("home"))
+        self.assertContains(listing, 'id="cine-watchlist-toggle"')
+        self.assertContains(listing, 'data-title="Sky Story 24"')
+        self.assertContains(listing, 'aria-pressed="false"')
+
+        detail = self.client.get(reverse("movie_detail", args=[Movie.objects.first().pk]))
+        self.assertContains(detail, 'id="cine-watchlist"')
+        self.assertContains(detail, "Add to watchlist")
+
     def test_search_matches_directors_and_clear_empty_state(self):
         response = self.client.get(reverse("search"), {"q": "A. Director"})
         self.assertEqual(response.context["page_obj"].paginator.count, 25)

@@ -24,6 +24,7 @@
             <a href="{% url 'director' movie.director %}">{{ movie.director }}</a>
         </p>
         <p class="cine-detail-meta"><strong>Catalog rating</strong><span class="cine-rating" aria-label="Catalog score {{ movie.rating }} out of 10"><span aria-hidden="true">★</span> {{ movie.rating }} / 10</span></p>
+        <button class="cine-watchlist-save cine-watchlist-detail" type="button" data-movie-id="{{ movie.id }}" data-title="{{ movie.title }}" data-year="{{ movie.release_date|date:'Y' }}" data-genre="{{ movie.genre }}" data-rating="{{ movie.rating }}" aria-pressed="false" aria-label="Save {{ movie.title }} to watchlist"><span aria-hidden="true">＋</span> Add to watchlist</button>
         <div class="cine-rule"></div>
         <p class="cine-description">{{ movie.description }}</p>
     </div>
