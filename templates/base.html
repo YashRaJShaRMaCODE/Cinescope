@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="theme-color" content="#101317">
     <meta name="description" content="{% block meta_description %}Discover films by genre, director, release date and rating in a thoughtfully curated movie catalog.{% endblock %}">
+    <link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml">
     <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
     <meta property="og:site_name" content="CineScope">
@@ -35,12 +36,21 @@
         <input id="cine-search" type="search" name="q" placeholder="Search films" value="{{ request.GET.q|default:'' }}">
         <button type="submit" aria-label="Search">↗</button>
     </form>
+    <button class="cine-watchlist-toggle" id="cine-watchlist-toggle" type="button" aria-haspopup="dialog" aria-controls="cine-watchlist" aria-label="Open watchlist">Watchlist <span id="cine-watchlist-count">0</span></button>
 </header>
+
+<dialog class="cine-watchlist-dialog" id="cine-watchlist" aria-labelledby="cine-watchlist-title">
+    <div class="cine-watchlist-heading"><div><p class="cine-kicker">YOUR PRIVATE PICKS</p><h2 id="cine-watchlist-title">Watchlist</h2></div><button class="cine-watchlist-close" type="button" aria-label="Close watchlist">×</button></div>
+    <p class="cine-watchlist-note">Saved on this device only. No account needed.</p>
+    <p class="cine-watchlist-empty" id="cine-watchlist-empty">Your list is waiting for a good film.</p>
+    <ul class="cine-watchlist-items" id="cine-watchlist-items"></ul>
+</dialog>
 
 <main class="cine-content" id="top">
     {% block content %}{% endblock %}
   </main>
 <footer class="cine-footer"><a href="/">CineScope</a><span>Browse a little deeper.</span><a href="#top">Back to top ↑</a></footer>
+<script src="{% static 'site.js' %}" defer></script>
 
 </body>
 </html>
