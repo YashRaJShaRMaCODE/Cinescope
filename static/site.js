@@ -22,11 +22,36 @@
   if (!dialog || !list || !empty || !count || !pickButton || !pickResult || !searchInput || !sortSelect || !exportButton || !results || !noMatches) return;
   let memoryItems;
 
+  function safePoster(value) {
+    if (typeof value !== "string" || !value) return "";
+    try {
+      const url = new URL(value, location.origin);
+      return url.origin === location.origin || (url.protocol === "https:" && url.hostname === "image.tmdb.org")
+        ? url.href
+        : "";
+    } catch {
+      return "";
+    }
+  }
+
   function readItems() {
     try {
       const parsed = JSON.parse(localStorage.getItem(storageKey) || "[]");
       if (!Array.isArray(parsed)) return [];
-      return parsed.filter((item) => item && /^\d+$/.test(String(item.id)) && typeof item.title === "string");
+      return parsed
+        .filter((item) => item && /^\d{1,20}$/.test(String(item.id)) && typeof item.title === "string")
+        .slice(0, 100)
+        .map((item) => ({
+          id: String(item.id),
+          title: item.title.slice(0, 200),
+          year: typeof item.year === "string" || typeof item.year === "number" ? String(item.year).slice(0, 4) : "",
+          genre: typeof item.genre === "string" ? item.genre.slice(0, 80) : "",
+          rating: item.rating !== "" && item.rating != null && Number.isFinite(Number(item.rating))
+            ? String(item.rating).slice(0, 5)
+            : "",
+          href: `/movie/${String(item.id)}/`,
+          poster: safePoster(item.poster),
+        }));
     } catch {
       return memoryItems || [];
     }
@@ -52,15 +77,7 @@
   function posterFor(button) {
     const source = button.closest(".cine-card")?.querySelector("img")?.currentSrc
       || button.closest(".cine-detail")?.querySelector("img")?.currentSrc;
-    if (!source) return "";
-    try {
-      const url = new URL(source, location.origin);
-      return url.protocol === "https:" && (url.hostname === "image.tmdb.org" || url.origin === location.origin)
-        ? url.href
-        : "";
-    } catch {
-      return "";
-    }
+    return safePoster(source);
   }
 
   function updateButtons(items) {
