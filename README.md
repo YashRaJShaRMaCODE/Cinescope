@@ -86,7 +86,7 @@ The watchlist is stored in this browser's local storage. Clearing browser site d
 5. Add thin film-reel rings behind the headline.
 6. Animate the rings gently for motion-enabled users.
 7. Reveal the hero copy with a short entrance.
-8. Stagger catalog poster entrances.
+8. Reveal catalog sections, genre links and posters as they enter the viewport, with a reduced-motion-safe fallback.
 9. Lift posters slightly on hover.
 10. Brighten posters on focus as well as hover.
 11. Animate the brand mark on hover.

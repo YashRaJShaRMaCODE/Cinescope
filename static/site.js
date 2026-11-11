@@ -1,4 +1,17 @@
 (() => {
+  const revealTargets = document.querySelectorAll(".cine-section-heading, .cine-genre-link, .cine-card");
+  if (revealTargets.length && "IntersectionObserver" in window && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.documentElement.classList.add("has-scroll-reveal");
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-revealed");
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: "0px 0px -6% 0px", threshold: 0.08 });
+    revealTargets.forEach((target) => revealObserver.observe(target));
+  }
+
   document.addEventListener("error", (event) => {
     const image = event.target;
     if (image instanceof HTMLImageElement && image.dataset.fallback && !image.dataset.fallbackApplied) {
