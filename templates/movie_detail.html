@@ -9,6 +9,7 @@
 {% block extra_head %}<script nonce="{{ request.csp_nonce }}" type="application/ld+json">{{ movie_schema }}</script>{% endblock %}
 {% block content %}
 
+<a class="cine-back-link" href="{{ detail_return_url }}">← Back to results</a>
 <div class="cine-detail">
     <div class="cine-detail-poster">
         <img src="{{ movie.poster_url }}" alt="Poster for {{ movie.title }}" width="342" height="513" fetchpriority="high" decoding="async" data-fallback="{% static 'poster-fallback.svg' %}">

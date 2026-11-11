@@ -2,7 +2,7 @@
 <div class="cine-grid">
     {% for movie in movies %}
         <article class="cine-card">
-                <a href="{% url 'movie_detail' movie.id %}">
+                <a href="{% url 'movie_detail' movie.id %}?return_to={% if detail_return_url %}{{ detail_return_url|urlencode }}{% else %}{{ request.get_full_path|urlencode }}{% endif %}">
                     <img src="{{ movie.poster_url }}" alt="Poster for {{ movie.title }}" width="342" height="513" data-fallback="{% static 'poster-fallback.svg' %}"{% if forloop.first %} fetchpriority="high"{% else %} loading="lazy"{% endif %} decoding="async">
                     <div class="cine-card-copy">
                         <h3>{{ movie.title }}</h3>

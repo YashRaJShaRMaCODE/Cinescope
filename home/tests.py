@@ -139,6 +139,24 @@ class MoviePaginationTests(TestCase):
         empty = self.client.get(reverse("search"), {"q": "no match"})
         self.assertContains(empty, "No matching films")
 
+    def test_movie_detail_returns_to_the_safe_listing_url(self):
+        movie = Movie.objects.first()
+        return_to = f'{reverse("search")}?q=Sky&page=2'
+
+        response = self.client.get(reverse("movie_detail", args=[movie.pk]), {"return_to": return_to})
+
+        self.assertEqual(response.context["detail_return_url"], return_to)
+        self.assertContains(response, 'href="/search/?q=Sky&amp;page=2"')
+
+    def test_movie_detail_rejects_external_return_urls(self):
+        movie = Movie.objects.first()
+
+        response = self.client.get(
+            reverse("movie_detail", args=[movie.pk]), {"return_to": "https://example.org/"}
+        )
+
+        self.assertEqual(response.context["detail_return_url"], reverse("home"))
+
     def test_health_robots_and_sitemap_routes(self):
         self.assertEqual(self.client.get(reverse("healthz")).json(), {"status": "ok"})
         self.assertContains(self.client.get(reverse("robots")), "Sitemap:")

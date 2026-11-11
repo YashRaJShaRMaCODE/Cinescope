@@ -7,6 +7,7 @@ from django.db.models import Count, Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.safestring import mark_safe
 from .models import Movie
 
@@ -87,6 +88,11 @@ def home(request):
 
 def movie_detail(request, movie_id):
     movie = get_object_or_404(Movie, id=movie_id)
+    return_to = request.GET.get("return_to", "")
+    if not url_has_allowed_host_and_scheme(
+        return_to, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        return_to = reverse("home")
     related_movies = Movie.objects.filter(genre__iexact=movie.genre).exclude(pk=movie.pk).order_by("-rating", "title")[:4]
     movie_schema = json.dumps({
         "@context": "https://schema.org",
@@ -100,6 +106,7 @@ def movie_detail(request, movie_id):
     return render(request, "movie_detail.html", {
         "movie": movie,
         "related_movies": related_movies,
+        "detail_return_url": return_to,
         "movie_schema": mark_safe(movie_schema),
     })
 
