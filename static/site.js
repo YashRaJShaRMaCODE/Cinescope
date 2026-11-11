@@ -202,5 +202,8 @@
   dialog.addEventListener("click", (event) => {
     if (event.target === dialog) dialog.close();
   });
+  window.addEventListener("storage", (event) => {
+    if (event.key === storageKey || event.key === null) renderList();
+  });
   renderList();
 })();
