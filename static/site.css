@@ -59,6 +59,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .has-scroll-reveal .is-revealed{opacity:1;transform:translateY(0)}
 .cine-watchlist-pick{min-height:42px;margin:4px 0 8px;padding:0 14px;border:1px solid var(--gold);background:var(--gold);color:#161513;font:600 11px 'DM Sans',sans-serif;cursor:pointer;transition:background-color .2s,transform .2s}.cine-watchlist-pick:hover:not(:disabled){transform:translateY(-1px);background:#e4ca8c}.cine-watchlist-pick:focus-visible,.cine-watchlist-pick-result a:focus-visible{outline:3px solid var(--paper);outline-offset:3px}.cine-watchlist-pick:disabled{opacity:.48;cursor:not-allowed}.cine-watchlist-pick-result{margin:8px 0;padding:12px;border-left:2px solid var(--gold);background:#1a201e;color:var(--muted);font-size:12px;line-height:1.5}.cine-watchlist-pick-result a{color:var(--gold);font-weight:600;text-decoration:none}.cine-watchlist-pick-result a:hover{text-decoration:underline}
 .cine-filter-actions button{cursor:pointer}
+.cine-filter-actions .cine-copy-view{border:1px solid var(--line);background:transparent;color:var(--paper)}.cine-filter-actions .cine-copy-view:hover{border-color:var(--gold);background:#1b1d1e;color:var(--gold)}.cine-copy-status{color:var(--gold);font-size:11px}
 .cine-watchlist-toggle{min-height:44px}
 .cine-watchlist-save{min-width:44px;height:44px}
 .cine-watchlist-close,.cine-watchlist-remove{width:44px;height:44px}

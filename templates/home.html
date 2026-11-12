@@ -58,6 +58,7 @@
         </label>
         <div class="cine-filter-actions">
             <button type="submit">Show films <span aria-hidden="true">↗</span></button>
+            {% if selected_genre or selected_year or selected_rating or selected_sort != "latest" %}<button class="cine-copy-view" id="cine-copy-view" type="button">Copy this view</button><span class="cine-copy-status" id="cine-copy-status" role="status" aria-live="polite" hidden></span>{% endif %}
             {% if selected_genre or selected_year or selected_rating or selected_sort != "latest" %}<a href="{% url 'home' %}">Clear filters</a>{% endif %}
         </div>
     </form>

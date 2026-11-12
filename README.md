@@ -9,6 +9,7 @@ CineScope is a Django movie discovery catalog. Browse titles by genre, release y
 
 - Search titles, genres and directors.
 - Filter the catalog by genre, release year and minimum score; sort by release date, score or title.
+- Copy a filtered collection URL to share the exact genre, year, score and sort view.
 - Browse popular, top-rated, upcoming and random collections.
 - Open movie pages with poster fallback, catalog details, related films, canonical metadata and Movie structured data.
 - Save films to a private, device-local watchlist; no account or server-side activity tracking is needed.

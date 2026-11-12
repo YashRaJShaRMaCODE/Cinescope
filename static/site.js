@@ -1,4 +1,18 @@
 (() => {
+  const copyViewButton = document.querySelector("#cine-copy-view");
+  const copyViewStatus = document.querySelector("#cine-copy-status");
+  if (copyViewButton && copyViewStatus) {
+    copyViewButton.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        copyViewStatus.textContent = "Filtered link copied.";
+      } catch {
+        copyViewStatus.textContent = "Could not copy. Copy the page address instead.";
+      }
+      copyViewStatus.hidden = false;
+    });
+  }
+
   const revealTargets = document.querySelectorAll(".cine-section-heading, .cine-genre-link, .cine-card");
   if (revealTargets.length && "IntersectionObserver" in window && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     document.documentElement.classList.add("has-scroll-reveal");
