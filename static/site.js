@@ -4,8 +4,8 @@
   if (copyViewButton && copyViewStatus) {
     copyViewButton.addEventListener("click", async () => {
       try {
-        await navigator.clipboard.writeText(window.location.href);
-        copyViewStatus.textContent = "Filtered link copied.";
+        await navigator.clipboard.writeText(copyViewButton.dataset.copyUrl || window.location.href);
+        copyViewStatus.textContent = copyViewButton.dataset.copiedMessage || "Filtered link copied.";
       } catch {
         copyViewStatus.textContent = "Could not copy. Copy the page address instead.";
       }

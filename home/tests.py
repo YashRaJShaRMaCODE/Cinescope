@@ -133,6 +133,8 @@ class MoviePaginationTests(TestCase):
         detail = self.client.get(reverse("movie_detail", args=[Movie.objects.first().pk]))
         self.assertContains(detail, 'id="cine-watchlist"')
         self.assertContains(detail, "Add to watchlist")
+        self.assertContains(detail, 'data-copied-message="Film link copied."')
+        self.assertEqual(detail.context["share_url"], f'http://testserver{reverse("movie_detail", args=[Movie.objects.first().pk])}')
 
     def test_search_matches_directors_and_clear_empty_state(self):
         response = self.client.get(reverse("search"), {"q": "A. Director"})

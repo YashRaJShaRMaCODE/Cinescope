@@ -107,6 +107,7 @@ def movie_detail(request, movie_id):
         "movie": movie,
         "related_movies": related_movies,
         "detail_return_url": return_to,
+        "share_url": request.build_absolute_uri(reverse("movie_detail", args=[movie.pk])),
         "movie_schema": mark_safe(movie_schema),
     })
 
