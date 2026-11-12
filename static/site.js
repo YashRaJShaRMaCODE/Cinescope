@@ -30,10 +30,31 @@
   const searchInput = document.querySelector("#cine-watchlist-search");
   const sortSelect = document.querySelector("#cine-watchlist-sort");
   const exportButton = document.querySelector("#cine-watchlist-export");
+  const importButton = document.querySelector("#cine-watchlist-import");
+  const importInput = document.querySelector("#cine-watchlist-file");
   const results = document.querySelector("#cine-watchlist-results");
   const noMatches = document.querySelector("#cine-watchlist-no-matches");
-  if (!dialog || !list || !empty || !count || !pickButton || !pickResult || !searchInput || !sortSelect || !exportButton || !results || !noMatches) return;
+  if (!dialog || !list || !empty || !count || !pickButton || !pickResult || !searchInput || !sortSelect || !exportButton || !importButton || !importInput || !results || !noMatches) return;
   let memoryItems;
+  const maxImportBytes = 256_000;
+
+  function normalizeItems(items) {
+    if (!Array.isArray(items)) return [];
+    return items
+      .filter((item) => item && /^\d{1,20}$/.test(String(item.id)) && typeof item.title === "string")
+      .slice(0, 100)
+      .map((item) => ({
+        id: String(item.id),
+        title: item.title.slice(0, 200),
+        year: typeof item.year === "string" || typeof item.year === "number" ? String(item.year).slice(0, 4) : "",
+        genre: typeof item.genre === "string" ? item.genre.slice(0, 80) : "",
+        rating: item.rating !== "" && item.rating != null && Number.isFinite(Number(item.rating))
+          ? String(item.rating).slice(0, 5)
+          : "",
+        href: `/movie/${String(item.id)}/`,
+        poster: safePoster(item.poster),
+      }));
+  }
 
   function safePoster(value) {
     if (typeof value !== "string" || !value) return "";
@@ -50,21 +71,7 @@
   function readItems() {
     try {
       const parsed = JSON.parse(localStorage.getItem(storageKey) || "[]");
-      if (!Array.isArray(parsed)) return [];
-      return parsed
-        .filter((item) => item && /^\d{1,20}$/.test(String(item.id)) && typeof item.title === "string")
-        .slice(0, 100)
-        .map((item) => ({
-          id: String(item.id),
-          title: item.title.slice(0, 200),
-          year: typeof item.year === "string" || typeof item.year === "number" ? String(item.year).slice(0, 4) : "",
-          genre: typeof item.genre === "string" ? item.genre.slice(0, 80) : "",
-          rating: item.rating !== "" && item.rating != null && Number.isFinite(Number(item.rating))
-            ? String(item.rating).slice(0, 5)
-            : "",
-          href: `/movie/${String(item.id)}/`,
-          poster: safePoster(item.poster),
-        }));
+      return normalizeItems(parsed);
     } catch {
       return memoryItems || [];
     }
@@ -211,6 +218,35 @@
     link.download = "cinescope-watchlist.json";
     link.click();
     window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  });
+  importButton.addEventListener("click", () => importInput.click());
+  importInput.addEventListener("change", async () => {
+    const file = importInput.files?.[0];
+    if (!file) return;
+    try {
+      if (file.size > maxImportBytes) throw new Error("This backup is larger than 256 KB.");
+      const parsed = JSON.parse(await file.text());
+      if (!Array.isArray(parsed)) throw new Error("Choose a CineScope watchlist JSON export.");
+      const existing = readItems();
+      const merged = [...existing];
+      const ids = new Set(existing.map((item) => item.id));
+      const incoming = normalizeItems(parsed);
+      for (const item of incoming) {
+        if (!ids.has(item.id) && merged.length < 100) {
+          ids.add(item.id);
+          merged.push(item);
+        }
+      }
+      saveItems(merged);
+      renderList();
+      results.textContent = `Added ${merged.length - existing.length} films; duplicates and invalid entries were skipped.`;
+      results.hidden = false;
+    } catch (error) {
+      results.textContent = error instanceof SyntaxError ? "That file is not valid JSON." : error.message;
+      results.hidden = false;
+    } finally {
+      importInput.value = "";
+    }
   });
   dialog.addEventListener("click", (event) => {
     if (event.target === dialog) dialog.close();
