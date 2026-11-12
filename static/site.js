@@ -185,6 +185,13 @@
       const existing = items.findIndex((item) => String(item.id) === id);
       if (existing >= 0) items.splice(existing, 1);
       else {
+        if (items.length >= 100) {
+          const message = "Your watchlist is full. Remove a film before saving another.";
+          const globalStatus = document.querySelector("#cine-watchlist-global-status");
+          if (globalStatus) globalStatus.textContent = message;
+          if (results) { results.textContent = message; results.hidden = false; }
+          return;
+        }
         const href = saveButton.closest(".cine-card")?.querySelector("a[href*='/movie/']")?.getAttribute("href")
           || location.pathname;
         items.unshift({
@@ -199,6 +206,8 @@
       }
       saveItems(items);
       renderList();
+      const globalStatus = document.querySelector("#cine-watchlist-global-status");
+      if (globalStatus) globalStatus.textContent = existing >= 0 ? "Film removed from your watchlist." : "Film saved to your watchlist.";
       return;
     }
     const removeButton = event.target.closest("[data-remove-id]");

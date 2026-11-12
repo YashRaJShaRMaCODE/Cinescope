@@ -127,6 +127,7 @@ class MoviePaginationTests(TestCase):
         self.assertContains(listing, 'id="cine-watchlist-pick-result"')
         self.assertContains(listing, 'id="cine-watchlist-import"')
         self.assertContains(listing, 'id="cine-watchlist-file"')
+        self.assertContains(listing, 'id="cine-watchlist-global-status"')
         self.assertContains(listing, 'data-title="Sky Story 24"')
         self.assertContains(listing, 'aria-pressed="false"')
 
