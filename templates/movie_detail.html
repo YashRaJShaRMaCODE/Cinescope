@@ -35,7 +35,7 @@
 
 {% if related_movies %}
 <section class="cine-related" aria-labelledby="related-title">
-    <div class="cine-section-heading"><div><p class="cine-kicker">Stay in this corner</p><h2 id="related-title">More {{ movie.genre }} films</h2></div></div>
+    <div class="cine-section-heading"><div><p class="cine-kicker">Stay in this corner</p><h2 id="related-title">Related picks</h2></div></div>
     {% with movies=related_movies %}{% include "movie_grid.html" %}{% endwith %}
 </section>
 {% endif %}

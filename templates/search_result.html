@@ -1,6 +1,6 @@
 {% extends "base.html"  %}
 {% block title %}{% if query %}Search results for {{ query }}{% else %}Search films{% endif %} | CineScope{% endblock %}
-{% block meta_description %}Search CineScope films by title, genre or director.{% endblock %}
+{% block meta_description %}Search CineScope films by title, plot, genre, director or release year.{% endblock %}
 {% block content %}
 <p class="cine-kicker">Catalog search</p>
 <h1 class="cine-page-title">{% if query %}Results for “{{ query }}”{% else %}Search the catalog{% endif %}</h1>

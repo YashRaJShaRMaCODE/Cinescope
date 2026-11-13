@@ -128,6 +128,7 @@ class MoviePaginationTests(TestCase):
         self.assertContains(listing, 'id="cine-watchlist-import"')
         self.assertContains(listing, 'id="cine-watchlist-file"')
         self.assertContains(listing, 'id="cine-watchlist-global-status"')
+        self.assertContains(listing, '<script type="module" src="/static/site.js"></script>')
         self.assertContains(listing, 'data-title="Sky Story 24"')
         self.assertContains(listing, 'aria-pressed="false"')
 
@@ -143,6 +144,36 @@ class MoviePaginationTests(TestCase):
 
         empty = self.client.get(reverse("search"), {"q": "no match"})
         self.assertContains(empty, "No matching films")
+
+    def test_search_matches_plot_description_and_release_year(self):
+        movie = Movie.objects.first()
+        movie.description = "A quiet journey beyond Neptune."
+        movie.save(update_fields=["description"])
+
+        plot = self.client.get(reverse("search"), {"q": "Neptune"})
+        year = self.client.get(reverse("search"), {"q": str(movie.release_date.year)})
+
+        self.assertEqual(plot.context["page_obj"].paginator.count, 1)
+        self.assertEqual(plot.context["movies"][0].pk, movie.pk)
+        self.assertGreaterEqual(year.context["page_obj"].paginator.count, 1)
+        self.assertContains(plot, "title, plot, genre, director or release year")
+
+    def test_related_picks_include_the_same_director_across_genres(self):
+        movie = Movie.objects.create(
+            title="Director Anchor",
+            description="A film by a familiar director.",
+            release_date=date(2019, 1, 1),
+            genre="Mystery",
+            director="A. Director",
+            rating=8.0,
+            poster_url="https://example.com/posters/anchor.jpg",
+        )
+
+        response = self.client.get(reverse("movie_detail", args=[movie.pk]))
+
+        self.assertContains(response, "Related picks")
+        self.assertGreaterEqual(len(response.context["related_movies"]), 4)
+        self.assertNotIn(movie.pk, [related.pk for related in response.context["related_movies"]])
 
     def test_movie_detail_returns_to_the_safe_listing_url(self):
         movie = Movie.objects.first()

@@ -26,4 +26,8 @@ jobs:
       - run: python manage.py test
         env:
           DJANGO_SECRET_KEY: test-only-secret-key
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      - run: node --test tests/watchlist-tools.test.mjs
       - run: pip-audit -r requirements.txt

@@ -93,7 +93,15 @@ def movie_detail(request, movie_id):
         return_to, allowed_hosts={request.get_host()}, require_https=request.is_secure()
     ):
         return_to = reverse("home")
-    related_movies = Movie.objects.filter(genre__iexact=movie.genre).exclude(pk=movie.pk).order_by("-rating", "title")[:4]
+    related_query = Q()
+    if movie.genre.strip():
+        related_query |= Q(genre__iexact=movie.genre)
+    if movie.director.strip():
+        related_query |= Q(director__iexact=movie.director)
+    related_movies = (
+        Movie.objects.filter(related_query).exclude(pk=movie.pk).order_by("-rating", "title", "pk")[:4]
+        if related_query else Movie.objects.none()
+    )
     movie_schema = json.dumps({
         "@context": "https://schema.org",
         "@type": "Movie",
@@ -114,17 +122,21 @@ def movie_detail(request, movie_id):
 
 def search(request):
     query = request.GET.get('q', '').strip()[:100]
-    movies = Movie.objects.filter(
+    search_query = (
         Q(title__icontains=query) | Q(genre__icontains=query) | Q(director__icontains=query)
-    ).order_by("-release_date", "-pk") if query else Movie.objects.none()
+        | Q(description__icontains=query)
+    )
+    if query.isdigit():
+        search_query |= Q(release_date__year=int(query))
+    movies = Movie.objects.filter(search_query).order_by("-release_date", "-pk") if query else Movie.objects.none()
     return render_movies(
         request,
         movies,
         "search_result.html",
         query=query,
         empty_message=(
-            "Enter a title, genre or director in the search above."
-            if not query else "No matching films. Try a different title, genre or director."
+            "Enter a title, genre, director, release year or plot detail in the search above."
+            if not query else "No matching films. Try a different title, genre, director, year or plot detail."
         ),
     )
 

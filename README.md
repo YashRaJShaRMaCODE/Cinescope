@@ -7,14 +7,14 @@ CineScope is a Django movie discovery catalog. Browse titles by genre, release y
 
 ## Features
 
-- Search titles, genres and directors.
+- Search titles, genres, directors, plot descriptions and release years.
 - Filter the catalog by genre, release year and minimum score; sort by release date, score or title.
 - Copy a filtered collection URL to share the exact genre, year, score and sort view.
 - Browse popular, top-rated, upcoming and random collections.
-- Open movie pages with poster fallback, catalog details, related films, canonical metadata and Movie structured data.
+- Open movie pages with poster fallback, catalog details, related films by genre or director, canonical metadata and Movie structured data.
 - Copy a clean film detail link to share; the link omits the private return-to-results query.
 - Save films to a private, device-local watchlist; no account or server-side activity tracking is needed.
-- Export the watchlist as JSON, then merge a validated backup later on the same or another device; imports keep the existing picks, remove duplicates, skip unsafe entries and cap the list at 100 films.
+- Export the watchlist as JSON, then merge a validated backup later on the same or another device; imports keep existing picks, skip unsafe entries and duplicates without letting them crowd out valid films, and cap the list at 100.
 - Ask CineScope to pick a random film from your saved list, then open that film directly.
 - Responsive poster-first layout, keyboard-accessible controls, reduced-motion support and lazy-loaded images.
 - Quick genre links with live catalog counts.
@@ -178,4 +178,4 @@ Open: <http://127.0.0.1:8000/>
 
 - SQLite is used for the seeded catalog. Keep user-submitted content off this deployment until a persistent database is configured.
 - Render runs migrations and idempotently seeds the sample catalog during deploy; `/healthz/` is the configured health check.
-- GitHub Actions runs the Django checks and test suite. Dependabot checks Python and workflow dependencies weekly.
+- GitHub Actions runs the Django checks, Python tests, and watchlist import regression tests. Dependabot checks Python and workflow dependencies weekly.

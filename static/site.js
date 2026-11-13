@@ -1,3 +1,5 @@
+import { mergeWatchlistItems, normalizeWatchlistItems, safePoster } from "./watchlist-tools.mjs";
+
 (() => {
   const copyViewButton = document.querySelector("#cine-copy-view");
   const copyViewStatus = document.querySelector("#cine-copy-status");
@@ -52,40 +54,10 @@
   let memoryItems;
   const maxImportBytes = 256_000;
 
-  function normalizeItems(items) {
-    if (!Array.isArray(items)) return [];
-    return items
-      .filter((item) => item && /^\d{1,20}$/.test(String(item.id)) && typeof item.title === "string")
-      .slice(0, 100)
-      .map((item) => ({
-        id: String(item.id),
-        title: item.title.slice(0, 200),
-        year: typeof item.year === "string" || typeof item.year === "number" ? String(item.year).slice(0, 4) : "",
-        genre: typeof item.genre === "string" ? item.genre.slice(0, 80) : "",
-        rating: item.rating !== "" && item.rating != null && Number.isFinite(Number(item.rating))
-          ? String(item.rating).slice(0, 5)
-          : "",
-        href: `/movie/${String(item.id)}/`,
-        poster: safePoster(item.poster),
-      }));
-  }
-
-  function safePoster(value) {
-    if (typeof value !== "string" || !value) return "";
-    try {
-      const url = new URL(value, location.origin);
-      return url.origin === location.origin || (url.protocol === "https:" && url.hostname === "image.tmdb.org")
-        ? url.href
-        : "";
-    } catch {
-      return "";
-    }
-  }
-
   function readItems() {
     try {
       const parsed = JSON.parse(localStorage.getItem(storageKey) || "[]");
-      return normalizeItems(parsed);
+      return normalizeWatchlistItems(parsed, location.origin);
     } catch {
       return memoryItems || [];
     }
@@ -111,7 +83,7 @@
   function posterFor(button) {
     const source = button.closest(".cine-card")?.querySelector("img")?.currentSrc
       || button.closest(".cine-detail")?.querySelector("img")?.currentSrc;
-    return safePoster(source);
+    return safePoster(source, location.origin);
   }
 
   function updateButtons(items) {
@@ -251,15 +223,7 @@
       const parsed = JSON.parse(await file.text());
       if (!Array.isArray(parsed)) throw new Error("Choose a CineScope watchlist JSON export.");
       const existing = readItems();
-      const merged = [...existing];
-      const ids = new Set(existing.map((item) => item.id));
-      const incoming = normalizeItems(parsed);
-      for (const item of incoming) {
-        if (!ids.has(item.id) && merged.length < 100) {
-          ids.add(item.id);
-          merged.push(item);
-        }
-      }
+      const merged = mergeWatchlistItems(existing, parsed, location.origin);
       saveItems(merged);
       renderList();
       results.textContent = `Added ${merged.length - existing.length} films; duplicates and invalid entries were skipped.`;
