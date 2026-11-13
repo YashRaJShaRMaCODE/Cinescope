@@ -1,4 +1,4 @@
-import { mergeWatchlistItems, normalizeWatchlistItems, safePoster } from "./watchlist-tools.mjs";
+import { mergeWatchlistItems, normalizeWatchlistItems, persistWatchlist, safePoster, visibleWatchlistItems } from "./watchlist-tools.mjs";
 
 (() => {
   const copyViewButton = document.querySelector("#cine-copy-view");
@@ -66,18 +66,14 @@ import { mergeWatchlistItems, normalizeWatchlistItems, safePoster } from "./watc
   function saveItems(items) {
     memoryItems = items.slice(0, 100);
     try {
-      localStorage.setItem(storageKey, JSON.stringify(memoryItems));
+      return persistWatchlist(localStorage, storageKey, memoryItems);
     } catch {
-      // Keep the interface usable if browser storage is disabled or full.
+      return false;
     }
   }
 
   function visibleItems(items) {
-    const query = searchInput.value.trim().toLowerCase();
-    const filtered = items.filter((item) => `${item.title} ${item.year} ${item.genre}`.toLowerCase().includes(query));
-    if (sortSelect.value === "title") filtered.sort((a, b) => a.title.localeCompare(b.title));
-    if (sortSelect.value === "rating") filtered.sort((a, b) => Number(b.rating || 0) - Number(a.rating || 0));
-    return filtered;
+    return visibleWatchlistItems(items, searchInput.value, sortSelect.value);
   }
 
   function posterFor(button) {
@@ -146,7 +142,7 @@ import { mergeWatchlistItems, normalizeWatchlistItems, safePoster } from "./watc
       row.append(link, remove);
       list.append(row);
     });
-    updateButtons(items);
+    updateButtons(allItems);
   }
 
   document.addEventListener("click", (event) => {
@@ -176,16 +172,22 @@ import { mergeWatchlistItems, normalizeWatchlistItems, safePoster } from "./watc
           poster: posterFor(saveButton),
         });
       }
-      saveItems(items);
+      const persisted = saveItems(items);
       renderList();
       const globalStatus = document.querySelector("#cine-watchlist-global-status");
-      if (globalStatus) globalStatus.textContent = existing >= 0 ? "Film removed from your watchlist." : "Film saved to your watchlist.";
+      if (globalStatus) globalStatus.textContent = persisted
+        ? existing >= 0 ? "Film removed from your watchlist." : "Film saved to your watchlist."
+        : "Browser storage is unavailable. Watchlist changes are temporary and can be lost on reload.";
       return;
     }
     const removeButton = event.target.closest("[data-remove-id]");
     if (removeButton) {
-      saveItems(readItems().filter((item) => String(item.id) !== removeButton.dataset.removeId));
+      const persisted = saveItems(readItems().filter((item) => String(item.id) !== removeButton.dataset.removeId));
       renderList();
+      const globalStatus = document.querySelector("#cine-watchlist-global-status");
+      if (globalStatus) globalStatus.textContent = persisted
+        ? "Film removed from your watchlist."
+        : "Browser storage is unavailable. Watchlist changes are temporary and can be lost on reload.";
     }
   });
 
@@ -224,9 +226,11 @@ import { mergeWatchlistItems, normalizeWatchlistItems, safePoster } from "./watc
       if (!Array.isArray(parsed)) throw new Error("Choose a CineScope watchlist JSON export.");
       const existing = readItems();
       const merged = mergeWatchlistItems(existing, parsed, location.origin);
-      saveItems(merged);
+      const persisted = saveItems(merged);
       renderList();
-      results.textContent = `Added ${merged.length - existing.length} films; duplicates and invalid entries were skipped.`;
+      results.textContent = persisted
+        ? `Added ${merged.length - existing.length} films; duplicates and invalid entries were skipped.`
+        : `Added ${merged.length - existing.length} films; changes are temporary because browser storage is unavailable.`;
       results.hidden = false;
     } catch (error) {
       results.textContent = error instanceof SyntaxError ? "That file is not valid JSON." : error.message;

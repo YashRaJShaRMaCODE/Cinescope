@@ -158,6 +158,26 @@ class MoviePaginationTests(TestCase):
         self.assertGreaterEqual(year.context["page_obj"].paginator.count, 1)
         self.assertContains(plot, "title, plot, genre, director or release year")
 
+    def test_search_ranks_exact_and_prefix_titles_before_plot_matches(self):
+        exact = Movie.objects.create(
+            title="Neptune", description="A quiet journey.", release_date=date(2000, 1, 1),
+            genre="Drama", director="A. Director", rating=7.0, poster_url="https://example.com/exact.jpg",
+        )
+        prefix = Movie.objects.create(
+            title="Neptune Crossing", description="A distant story.", release_date=date(2001, 1, 1),
+            genre="Drama", director="A. Director", rating=7.0, poster_url="https://example.com/prefix.jpg",
+        )
+        plot = Movie.objects.get(title="Sky Story 0")
+        plot.description = "A quiet route to Neptune."
+        plot.save(update_fields=["description"])
+
+        response = self.client.get(reverse("search"), {"q": "Neptune"})
+
+        self.assertEqual(
+            [movie.pk for movie in response.context["movies"]],
+            [exact.pk, prefix.pk, plot.pk],
+        )
+
     def test_related_picks_include_the_same_director_across_genres(self):
         movie = Movie.objects.create(
             title="Director Anchor",

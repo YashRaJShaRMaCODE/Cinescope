@@ -3,7 +3,7 @@ from datetime import date
 import json
 
 from django.core.paginator import Paginator
-from django.db.models import Count, Q
+from django.db.models import Case, Count, IntegerField, Q, Value, When
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -128,7 +128,25 @@ def search(request):
     )
     if query.isdigit():
         search_query |= Q(release_date__year=int(query))
-    movies = Movie.objects.filter(search_query).order_by("-release_date", "-pk") if query else Movie.objects.none()
+    if query:
+        rank_rules = [
+            When(title__iexact=query, then=Value(0)),
+            When(title__istartswith=query, then=Value(1)),
+            When(title__icontains=query, then=Value(2)),
+            When(Q(genre__icontains=query) | Q(director__icontains=query), then=Value(3)),
+        ]
+        if query.isdigit():
+            rank_rules.append(When(release_date__year=int(query), then=Value(4)))
+        ordering = Case(
+            *rank_rules,
+            default=Value(5),
+            output_field=IntegerField(),
+        )
+        movies = Movie.objects.filter(search_query).annotate(search_rank=ordering).order_by(
+            "search_rank", "-release_date", "-pk"
+        )
+    else:
+        movies = Movie.objects.none()
     return render_movies(
         request,
         movies,

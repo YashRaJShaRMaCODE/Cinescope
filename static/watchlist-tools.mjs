@@ -1,5 +1,22 @@
 const validId = /^\d{1,20}$/;
 
+export function visibleWatchlistItems(items, query, sort) {
+  const normalizedQuery = query.trim().toLowerCase();
+  const visible = items.filter((item) => `${item.title} ${item.year} ${item.genre}`.toLowerCase().includes(normalizedQuery));
+  if (sort === "title") visible.sort((a, b) => a.title.localeCompare(b.title));
+  if (sort === "rating") visible.sort((a, b) => Number(b.rating || 0) - Number(a.rating || 0));
+  return visible;
+}
+
+export function persistWatchlist(storage, key, items) {
+  try {
+    storage.setItem(key, JSON.stringify(items));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function safePoster(value, origin) {
   if (typeof value !== "string" || !value) return "";
   try {
